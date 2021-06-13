@@ -73,6 +73,7 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
             }
 
         }
+
         return null;
     }
 
@@ -145,12 +146,13 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     @Override
     public Object visitReturnStatementAST(compilerParser.ReturnStatementASTContext ctx) {
-
+        this.visit(ctx.expression());
         return null;
     }
 
     @Override
     public Object visitPrintStatementAST(compilerParser.PrintStatementASTContext ctx) {
+        this.visit(ctx.expression());
         return null;
     }
 
@@ -179,6 +181,16 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     @Override
     public Object visitFunctionCallStatementAST(compilerParser.FunctionCallStatementASTContext ctx) {
+
+
+        if(ctx.expressionList()!=null){
+            this.visit(ctx.expressionList());
+        }
+        if(ctx.primitiveExpression()!=null){
+            this.visit(ctx.primitiveExpression());
+        }
+
+
         return null;
     }
 
@@ -218,8 +230,6 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     @Override
     public Object visitComparisonAST(compilerParser.ComparisonASTContext ctx) {
-
-        System.out.println(ctx.getText());
         for (compilerParser.AdditionExpressionContext additionExpressionContext : ctx.additionExpression()) {
             String comparisonType = (String) this.visit(additionExpressionContext);
             if (!comparisonType.equals("int")) {
@@ -240,7 +250,6 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     }
 
-    //flag
     @Override
     public Object visitAdditionExpressionAST(compilerParser.AdditionExpressionASTContext ctx) {
 
@@ -254,6 +263,7 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
         } else if (additionFactor.equals("null") && !multiplicationExpression.equals("null")) {
             return multiplicationExpression;
         } else {
+            errorManager.errorMessages.add(errorCreator("you cant operate "+ additionFactor + " type with "+ multiplicationExpression,0));
             return "null";
         }
 
@@ -317,7 +327,6 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     }
 
-    //Aqui se obtiene cada variable para ser evaluada
     @Override
     public Object visitElementExpressionAST(compilerParser.ElementExpressionASTContext ctx) {
 
@@ -355,7 +364,6 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
 
     }
 
-    //Para acceder a campos de una lista.
     @Override
     public Object visitElementAccessAST(compilerParser.ElementAccessASTContext ctx) {
         for (compilerParser.ExpressionContext expressionContext : ctx.expression()) {
@@ -376,7 +384,33 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
     @Override
     public Object visitFunctionCallExpressionAST(compilerParser.FunctionCallExpressionASTContext ctx) {
 
-        return null;
+        SymbolFunction symbolFunction = (SymbolFunction) symbolsTable.searchSymbolAll(ctx.ID().getSymbol().getText());
+        int actualParamsQuantity = 0;
+        if(ctx.expressionList().getText().contains(",")){
+            actualParamsQuantity = ctx.expressionList().getText().split(",").length;
+        }else{
+            if(!ctx.expressionList().getText().equals("")){
+                actualParamsQuantity = 1;
+            }
+        }
+
+        if(ctx.LEFTPARENTHESIS() == null || ctx.RIGTHPARENTHESIS() == null){
+            errorManager.errorMessages.add(errorCreator("the function "+ctx.ID().getSymbol().getText()+" require parenthesis <example()> to be called",ctx.ID().getSymbol().getLine()));
+        }
+
+        if(symbolFunction == null){
+            errorManager.errorMessages.add(errorCreator("the function "+ctx.ID().getSymbol().getText()+" is not declared in this scope",ctx.ID().getSymbol().getLine()));
+            return "null";
+        }else{
+            if(actualParamsQuantity == symbolFunction.parametersQuantity){
+                return symbolFunction.type;
+            }else{
+                errorManager.errorMessages.add(errorCreator("the quantity of params function "+ctx.ID().getSymbol().getText()+" is "+symbolFunction.parametersQuantity+" dont math with the call function quantity "+ actualParamsQuantity,ctx.ID().getSymbol().getLine()));
+                return "null";
+            }
+
+        }
+
     }
 
     @Override
@@ -442,7 +476,11 @@ public class ContextualAnalysis extends compilerParserBaseVisitor {
         } else if (ctx.listExpression() != null) {
             return this.visit(ctx.listExpression());
         } else {
-            return this.visit(ctx.functionCallExpression());
+            if(ctx.functionCallExpression()!=null) {
+                return this.visit(ctx.functionCallExpression());
+            }else{
+                return "null";
+            }
         }
 
     }

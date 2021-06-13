@@ -2,13 +2,15 @@ def view_list():
     list = [1,2,3]
     index = 0
     while(index<len(list)+1):
+        x = "hola"
         if(index>3):
             print(list[index])
         $
         else:
             print(index+1)
         $
-    x = list[3]
+    x = list[2]
     return x
     $
 $
+print (view_list())

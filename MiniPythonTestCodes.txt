@@ -1,0 +1,58 @@
+----------------------------------Test Code 1----------------------------------
+def view_list():
+    list = [1,2,3]
+    index = 0
+    while(index<len(list)+1):
+        x = "hola"
+        if(index>3):
+            print(list[index])
+        $
+        else:
+            print(index+1)
+        $
+    x = list[2]
+    return x
+    $
+$
+print (view_list())
+
+
+----------------------------------Test Code 2----------------------------------
+//Testing error - is an variable is created
+value = 3
+if( value > 3 ):
+    print(values)
+$
+else:
+    print(0)
+$
+----------------------------------Test Code 3----------------------------------
+//Testing error - type operations
+
+fakeString = 'c'
+value = 3 + fakeString 
+if( value > 3 ):
+    print(value)
+$
+else:
+    print(0)
+$
+----------------------------------Test Code 4----------------------------------
+//Testing error - params quantity error on call
+def view_list(x):
+    list = [1,2,3]
+    index = 0
+    while(index<len(list)+1):
+        x = "hola"
+        if(index>3):
+            print(list[index])
+        $
+        else:
+            print(index+1)
+        $
+    x = list[2]
+    return x
+    $
+$
+print (view_list())
+x = view_list()
