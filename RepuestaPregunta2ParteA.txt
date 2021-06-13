@@ -1,0 +1,9 @@
+                                                                    ***********
+                                                                    *Respuesta*
+                                                                    ***********
+
+    Como no existe una declaración de variable como tal sin valor entonces se puede aprovechar para extraer el valor que se le esta intentando asignar a esa variable
+y a partir del valor obtenido entonces se puede calcular el tipo de la variable, al menos entre los tipos de datos basicos/primigenios, esto se puede calcular con las
+expresiones regulares para detectar valores y patrones que correspondan a String, Int o char.
+    Por otra parte, para trabajar con la asignacion dinamica de valores entonces lo que se haria es que al momento de ser re asignado un nuevo valor a una variable se recalcularia
+el tipo de datos de la misma y se cambiaria en el almacen de datos o en el almacen de simbolos.
